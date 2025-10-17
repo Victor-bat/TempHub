@@ -7,5 +7,5 @@ export type Job = {
   duration: string;
   description: string;
   skills: string[];
-  category: "Tech" | "Design" | "Admin" | "Management" | "Other";
+  category: "Tech" | "Design" | "Admin" | "Management" | "Retail" | "Hospitality" | "Events" | "Labor" | "Logistics" | "Other";
 };

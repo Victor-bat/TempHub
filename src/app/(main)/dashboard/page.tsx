@@ -23,6 +23,17 @@ const mockJobs: Job[] = [
     category: "Tech",
   },
   {
+    id: "5",
+    title: "Event Staff",
+    company: "Grand Festivities",
+    location: "Downtown",
+    payRate: "$18/hr",
+    duration: "1 Day",
+    description: "Energetic event staff needed for a corporate conference. Responsibilities include setup, guest registration, and breakdown.",
+    skills: ["Customer Service", "Teamwork", "Communication"],
+    category: "Events",
+  },
+  {
     id: "2",
     title: "UI/UX Designer",
     company: "Creative Solutions",
@@ -32,6 +43,50 @@ const mockJobs: Job[] = [
     description: "We are looking for a talented UI/UX designer to create amazing user experiences. The ideal candidate should have an eye for clean and artful design.",
     skills: ["Figma", "Sketch", "Adobe XD", "User Research"],
     category: "Design",
+  },
+   {
+    id: "6",
+    title: "Temporary Warehouse Associate",
+    company: "ShipFast Logistics",
+    location: "Industrial Park, TX",
+    payRate: "$22/hr",
+    duration: "2 Weeks",
+    description: "Looking for a reliable warehouse associate for picking, packing, and shipping orders. Must be able to lift up to 50 lbs.",
+    skills: ["Packing", "Inventory", "Lifting"],
+    category: "Labor",
+  },
+  {
+    id: "4",
+    title: "Agile Project Manager",
+    company: "Stripe",
+    location: "Remote",
+    payRate: "$85/hr",
+    duration: "6 Months Contract",
+    description: "We are seeking a seasoned Agile Project Manager to lead our development teams. You will be responsible for planning, executing, and finalizing projects according to strict deadlines.",
+    skills: ["Agile", "Scrum", "JIRA", "Project Planning"],
+    category: "Management",
+  },
+  {
+    id: "7",
+    title: "Kitchen Helper for Weekend",
+    company: "The Gourmet Place",
+    location: "City Center",
+    payRate: "$16/hr",
+    duration: "2 days",
+    description: "Assistant needed in a busy kitchen for food prep and cleaning duties during the weekend rush.",
+    skills: ["Food Prep", "Cleaning", "Teamwork"],
+    category: "Hospitality",
+  },
+  {
+    id: "8",
+    title: "Part-time Delivery Driver",
+    company: "Quick Eats",
+    location: "City-wide",
+    payRate: "$15/hr + tips",
+    duration: "Flexible",
+    description: "Flexible delivery driver position available. Must have a valid driver's license and a reliable vehicle.",
+    skills: ["Driving", "Navigation", "Customer Service"],
+    category: "Logistics",
   },
   {
     id: "3",
@@ -43,17 +98,6 @@ const mockJobs: Job[] = [
     description: "Hiring a detail-oriented data entry clerk to manage and update information on our company's databases and computer systems.",
     skills: ["Data Entry", "Microsoft Excel", "Accuracy"],
     category: "Admin",
-  },
-   {
-    id: "4",
-    title: "Agile Project Manager",
-    company: "Stripe",
-    location: "Remote",
-    payRate: "$85/hr",
-    duration: "6 Months Contract",
-    description: "We are seeking a seasoned Agile Project Manager to lead our development teams. You will be responsible for planning, executing, and finalizing projects according to strict deadlines.",
-    skills: ["Agile", "Scrum", "JIRA", "Project Planning"],
-    category: "Management",
   },
 ];
 
@@ -67,7 +111,7 @@ const mockPostedJobs: Job[] = [
     duration: "2 days",
     description: "Looking for an experienced barista for a weekend coffee festival.",
     skills: ["Coffee Making", "Customer Service"],
-    category: "Other"
+    category: "Hospitality"
   },
   {
     id: "2",
@@ -78,7 +122,7 @@ const mockPostedJobs: Job[] = [
     duration: "4 hours",
     description: "Need help with stocking and customer service during a sale.",
     skills: ["Retail", "Communication"],
-    category: "Other"
+    category: "Retail"
   },
 ]
 

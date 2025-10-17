@@ -46,6 +46,11 @@ export default function PostJobPage() {
                   <SelectItem value="design">Design</SelectItem>
                   <SelectItem value="admin">Admin</SelectItem>
                   <SelectItem value="management">Management</SelectItem>
+                  <SelectItem value="retail">Retail</SelectItem>
+                  <SelectItem value="hospitality">Hospitality</SelectItem>
+                  <SelectItem value="events">Events</SelectItem>
+                  <SelectItem value="labor">Labor</SelectItem>
+                  <SelectItem value="logistics">Logistics</SelectItem>
                   <SelectItem value="other">Other</SelectItem>
                 </SelectContent>
               </Select>
