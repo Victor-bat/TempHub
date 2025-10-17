@@ -37,6 +37,17 @@ const mockJobs: Job[] = [
     skills: ["Figma", "Sketch", "Adobe XD", "User Research", "Wireframing"],
     category: "Design",
   },
+    {
+    id: "5",
+    title: "Event Staff",
+    company: "Grand Festivities",
+    location: "Downtown",
+    payRate: "$18/hr",
+    duration: "1 Day",
+    description: "Energetic event staff needed for a corporate conference. Responsibilities include setup, guest registration, and breakdown.",
+    skills: ["Customer Service", "Teamwork", "Communication"],
+    category: "Events",
+  },
   {
     id: "3",
     title: "Data Entry Clerk",
@@ -47,6 +58,17 @@ const mockJobs: Job[] = [
     description: "Hiring a detail-oriented data entry clerk to manage and update information on our company's databases and computer systems. The ideal candidate will be computer savvy and a fast typist with a keen eye for detail. You will report to a data manager or another senior data team member.",
     skills: ["Data Entry", "Microsoft Excel", "Accuracy", "Typing Speed"],
     category: "Admin",
+  },
+   {
+    id: "6",
+    title: "Temporary Warehouse Associate",
+    company: "ShipFast Logistics",
+    location: "Industrial Park, TX",
+    payRate: "$22/hr",
+    duration: "2 Weeks",
+    description: "Looking for a reliable warehouse associate for picking, packing, and shipping orders. Must be able to lift up to 50 lbs.",
+    skills: ["Packing", "Inventory", "Lifting"],
+    category: "Labor",
   },
   {
     id: "4",
@@ -59,6 +81,28 @@ const mockJobs: Job[] = [
     skills: ["Agile", "Scrum", "JIRA", "Project Planning", "Risk Management"],
     category: "Management",
   },
+    {
+    id: "7",
+    title: "Kitchen Helper for Weekend",
+    company: "The Gourmet Place",
+    location: "City Center",
+    payRate: "$16/hr",
+    duration: "2 days",
+    description: "Assistant needed in a busy kitchen for food prep and cleaning duties during the weekend rush.",
+    skills: ["Food Prep", "Cleaning", "Teamwork"],
+    category: "Hospitality",
+  },
+  {
+    id: "8",
+    title: "Part-time Delivery Driver",
+    company: "Quick Eats",
+    location: "City-wide",
+    payRate: "$15/hr + tips",
+    duration: "Flexible",
+    description: "Flexible delivery driver position available. Must have a valid driver's license and a reliable vehicle.",
+    skills: ["Driving", "Navigation", "Customer Service"],
+    category: "Logistics",
+  },
 ];
 
 export default function JobDetailPage({ params }: { params: { id: string } }) {
@@ -68,17 +112,23 @@ export default function JobDetailPage({ params }: { params: { id: string } }) {
     return (
       <div className="container mx-auto p-8 text-center">
         <h1 className="text-2xl font-bold">Job not found</h1>
-        <Link href="/" className="mt-4 inline-block text-primary hover:underline">
+        <Link href="/dashboard" className="mt-4 inline-block text-primary hover:underline">
           Back to all jobs
         </Link>
       </div>
     );
   }
 
+  const ApplyNowButton = () => (
+    <Button size="lg" className="w-full" asChild>
+      <Link href={`/jobs/${job.id}/apply`}>Apply Now</Link>
+    </Button>
+  );
+
   return (
     <div className="container mx-auto max-w-4xl p-4 md:p-8">
       <Link
-        href="/"
+        href="/dashboard?role=seeker"
         className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-4"
       >
         <ArrowLeft className="h-4 w-4" />
@@ -133,7 +183,7 @@ export default function JobDetailPage({ params }: { params: { id: string } }) {
           </Card>
           
           <div className="block md:hidden">
-             <Button size="lg" className="w-full">Apply Now</Button>
+            <ApplyNowButton />
           </div>
 
           <div className="block md:hidden">
@@ -143,7 +193,7 @@ export default function JobDetailPage({ params }: { params: { id: string } }) {
         </div>
         <div className="md:col-span-1 space-y-6">
             <div className="hidden md:block">
-              <Button size="lg" className="w-full">Apply Now</Button>
+              <ApplyNowButton />
             </div>
             <div className="hidden md:block">
              <CandidateMatching jobDescription={job.description} />
