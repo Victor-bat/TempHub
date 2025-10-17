@@ -1,3 +1,5 @@
+'use client';
+
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -10,8 +12,16 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
+  const router = useRouter();
+
+  const handleLogin = (userType: 'Job Seeker' | 'Business Owner') => {
+    const role = userType === 'Job Seeker' ? 'seeker' : 'business';
+    router.push(`/dashboard?role=${role}`);
+  };
+
   const LoginForm = ({ userType }: { userType: 'Job Seeker' | 'Business Owner' }) => (
     <>
       <div className="grid gap-4">
@@ -33,7 +43,7 @@ export default function LoginPage() {
           Login with Google
       </Button>
       <div className="mt-4 flex flex-col gap-4">
-        <Button className="w-full">Login</Button>
+        <Button className="w-full" onClick={() => handleLogin(userType)}>Login</Button>
         <div className="text-center text-sm">
           <Link href="#" className="text-primary hover:underline">
             Forgot Password?

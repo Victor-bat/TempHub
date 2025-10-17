@@ -16,7 +16,10 @@ export default function Header() {
         <div className="flex flex-1 items-center justify-end space-x-2">
           <nav className="hidden md:flex md:items-center md:space-x-4">
             <Button variant="ghost" asChild>
-              <Link href="/">Find Jobs</Link>
+              <Link href="/dashboard?role=seeker">Find Jobs</Link>
+            </Button>
+            <Button variant="ghost" asChild>
+              <Link href="/dashboard?role=business">For Businesses</Link>
             </Button>
             <Button variant="default" asChild>
               <Link href="/jobs/post">Post a Job</Link>
