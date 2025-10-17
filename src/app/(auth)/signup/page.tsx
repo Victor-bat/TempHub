@@ -10,6 +10,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+
 
 export default function SignupPage() {
   return (
@@ -18,10 +20,30 @@ export default function SignupPage() {
         <CardHeader className="text-center">
           <CardTitle className="font-headline text-2xl">Create an Account</CardTitle>
           <CardDescription>
-            Join GigConnect to find your next gig.
+            Join TempHub to find your next gig or your next hire.
           </CardDescription>
         </CardHeader>
         <CardContent className="grid gap-4">
+          <RadioGroup defaultValue="seeker" className="grid grid-cols-2 gap-4">
+            <div>
+              <RadioGroupItem value="seeker" id="seeker" className="peer sr-only" />
+              <Label
+                htmlFor="seeker"
+                className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
+              >
+                I&apos;m a Job Seeker
+              </Label>
+            </div>
+            <div>
+              <RadioGroupItem value="business" id="business" className="peer sr-only" />
+              <Label
+                htmlFor="business"
+                className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
+              >
+                I&apos;m a Business
+              </Label>
+            </div>
+          </RadioGroup>
           <div className="grid gap-2">
             <Label htmlFor="name">Full Name</Label>
             <Input id="name" placeholder="Your Name" required />

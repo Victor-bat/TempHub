@@ -9,7 +9,7 @@ export default function Header() {
         <div className="mr-4 flex items-center">
           <Briefcase className="h-6 w-6 mr-2 text-primary" />
           <Link href="/" className="font-headline text-lg font-bold text-primary">
-            GigConnect
+            TempHub
           </Link>
         </div>
         <div className="flex flex-1 items-center justify-end space-x-2">

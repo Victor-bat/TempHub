@@ -11,7 +11,7 @@ export default function AuthLayout({
       <div className="absolute top-8 flex items-center gap-2">
         <Briefcase className="h-6 w-6 text-primary" />
         <Link href="/" className="font-headline text-xl font-bold text-primary">
-          GigConnect
+          TempHub
         </Link>
       </div>
       {children}
