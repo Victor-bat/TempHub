@@ -10,7 +10,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Edit } from "lucide-react";
+import { Edit, Star, ThumbsUp } from "lucide-react";
 
 export default function ProfilePage() {
   const user = {
@@ -31,10 +31,25 @@ export default function ProfilePage() {
         period: "2019 - 2021",
       },
     ],
+    upvotes: 128,
+    reviews: [
+        {
+            id: 1,
+            author: "Stark Industries",
+            rating: 5,
+            comment: "Excellent work ethic and delivered on time. Highly recommended.",
+        },
+        {
+            id: 2,
+            author: "Wayne Enterprises",
+            rating: 5,
+            comment: "Alice is a great team player and a very skilled developer.",
+        }
+    ]
   };
 
   return (
-    <div className="container mx-auto max-w-3xl p-4 md:p-8">
+    <div className="container mx-auto max-w-3xl p-4 md:p-8 space-y-8">
       <Card>
         <CardHeader className="relative">
           <div className="flex items-center space-x-4">
@@ -45,6 +60,13 @@ export default function ProfilePage() {
             <div>
               <CardTitle className="font-headline text-3xl">{user.name}</CardTitle>
               <CardDescription className="text-md">{user.email}</CardDescription>
+              <div className="flex items-center gap-4 mt-2">
+                <div className="flex items-center gap-1 text-muted-foreground">
+                    <ThumbsUp className="h-5 w-5 text-primary" />
+                    <span className="font-bold text-lg text-foreground">{user.upvotes}</span>
+                    <span className="text-sm">Upvotes</span>
+                </div>
+              </div>
             </div>
           </div>
           <Button variant="outline" size="icon" className="absolute top-4 right-4">
@@ -86,6 +108,31 @@ export default function ProfilePage() {
             </div>
 
           </div>
+        </CardContent>
+      </Card>
+      
+      <Card>
+        <CardHeader>
+            <CardTitle className="font-headline text-2xl">Reviews & Ratings</CardTitle>
+            <CardDescription>What others are saying about {user.name}.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+            {user.reviews.map(review => (
+                <div key={review.id} className="border-l-4 border-primary pl-4">
+                    <div className="flex items-center mb-1">
+                        <h4 className="font-semibold">{review.author}</h4>
+                        <div className="flex items-center ml-auto">
+                            {Array.from({ length: 5 }).map((_, i) => (
+                                <Star key={i} className={`h-4 w-4 ${i < review.rating ? 'text-accent fill-accent' : 'text-muted-foreground'}`} />
+                            ))}
+                        </div>
+                    </div>
+                    <p className="text-sm text-muted-foreground italic">&quot;{review.comment}&quot;</p>
+                </div>
+            ))}
+             {user.reviews.length === 0 && (
+                <p className="text-sm text-muted-foreground text-center py-4">No reviews yet.</p>
+             )}
         </CardContent>
       </Card>
     </div>
