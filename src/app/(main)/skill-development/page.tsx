@@ -8,7 +8,7 @@ const recommendedVideos = [
   {
     id: '1',
     title: 'Top 10 Most In-Demand Skills for 2024',
-    videoId: 'S_45I8tO2Ug',
+    videoId: 'jLbUNFc2jzA',
     description: 'Learn about the most in-demand skills for the current job market.'
   },
   {
