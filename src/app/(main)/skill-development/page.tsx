@@ -20,7 +20,7 @@ const recommendedVideos = [
   {
     id: '3',
     title: 'Mastering the Job Interview: Pro Tips',
-    videoId: 'pvQGSA_eEuk',
+    videoId: 'ppf9j8x0LA8',
     description: 'Tips and tricks to help you ace your next job interview with confidence.'
   },
   {
