@@ -61,6 +61,8 @@ export default function ApplyJobPage() {
     );
   }
 
+  const professionalCategories = ["Tech", "Design", "Admin", "Management"];
+
   return (
     <div className="container mx-auto max-w-2xl p-4 md:p-8">
        <Link
@@ -99,10 +101,18 @@ export default function ApplyJobPage() {
             </div>
             
             <div className="space-y-4">
-                <FileUpload id="resume-upload" label="Upload Resume" description="PDF, DOC, DOCX (Max 5MB)" />
-                <FileUpload id="aadhar-upload" label="Upload Aadhar Card" description="PDF, JPG, PNG (Max 5MB)" />
+                {professionalCategories.includes(job.category) && (
+                    <FileUpload id="resume-upload" label="Upload Resume/Portfolio" description="PDF, DOCX, ZIP (Max 5MB)" />
+                )}
+                
+                <FileUpload id="aadhar-upload" label="Upload Aadhar Card" description="Required for identity verification. PDF, JPG, PNG (Max 5MB)" />
+
                 {job.category === 'Logistics' && (
-                    <FileUpload id="license-upload" label="Upload Driving License" description="Required for logistics roles" />
+                    <FileUpload id="license-upload" label="Upload Driving License" description="Required for logistics and delivery roles. PDF, JPG, PNG (Max 5MB)" />
+                )}
+
+                {job.category === 'Hospitality' && (
+                     <FileUpload id="food-safety-cert-upload" label="Upload Food Safety Certificate (Optional)" description="FSSAI certificate or similar. PDF, JPG (Max 5MB)" />
                 )}
             </div>
           </form>
