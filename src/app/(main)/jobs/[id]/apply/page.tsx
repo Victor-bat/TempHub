@@ -19,6 +19,30 @@ import { ArrowLeft, UploadCloud } from "lucide-react";
 import Link from "next/link";
 import { JobsContext } from '@/context/jobs-context';
 
+const FileUpload = ({ label, description, id }: { label: string; description: string, id: string }) => (
+    <div className="space-y-2">
+        <Label htmlFor={id}>{label}</Label>
+            <div className="flex items-center justify-center w-full">
+            <Label
+                htmlFor={id}
+                className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-card hover:bg-muted"
+            >
+                <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                <UploadCloud className="w-8 h-8 mb-2 text-muted-foreground" />
+                <p className="mb-1 text-sm text-muted-foreground">
+                    <span className="font-semibold">Click to upload</span> or drag and drop
+                </p>
+                <p className="text-xs text-muted-foreground">
+                    {description}
+                </p>
+                </div>
+                <Input id={id} type="file" className="hidden" />
+            </Label>
+        </div>
+    </div>
+);
+
+
 export default function ApplyJobPage() {
   const params = useParams();
   const id = params.id as string;
@@ -55,6 +79,16 @@ export default function ApplyJobPage() {
         </CardHeader>
         <CardContent>
           <form className="space-y-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                    <Label htmlFor="name">Full Name</Label>
+                    <Input id="name" placeholder="Enter your full name" required />
+                </div>
+                 <div className="space-y-2">
+                    <Label htmlFor="address">Address</Label>
+                    <Input id="address" placeholder="Enter your address" required />
+                </div>
+            </div>
             <div className="space-y-2">
               <Label htmlFor="cover-letter">Cover Letter (Optional)</Label>
               <Textarea
@@ -64,28 +98,12 @@ export default function ApplyJobPage() {
               />
             </div>
             
-            <div className="space-y-2">
-                <Label htmlFor="proofs">Upload Documents</Label>
-                 <div className="flex items-center justify-center w-full">
-                    <Label
-                        htmlFor="proofs"
-                        className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed rounded-lg cursor-pointer bg-card hover:bg-muted"
-                    >
-                        <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                        <UploadCloud className="w-8 h-8 mb-4 text-muted-foreground" />
-                        <p className="mb-2 text-sm text-muted-foreground">
-                            <span className="font-semibold">Click to upload</span> or drag and drop
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                            Resume, ID, or other required documents
-                        </p>
-                        </div>
-                        <Input id="proofs" type="file" className="hidden" multiple />
-                    </Label>
-                </div>
-                 <p className="text-xs text-muted-foreground pt-1">
-                    Please upload any documents required by the job description.
-                </p>
+            <div className="space-y-4">
+                <FileUpload id="resume-upload" label="Upload Resume" description="PDF, DOC, DOCX (Max 5MB)" />
+                <FileUpload id="aadhar-upload" label="Upload Aadhar Card" description="PDF, JPG, PNG (Max 5MB)" />
+                {job.category === 'Logistics' && (
+                    <FileUpload id="license-upload" label="Upload Driving License" description="Required for logistics roles" />
+                )}
             </div>
           </form>
         </CardContent>
