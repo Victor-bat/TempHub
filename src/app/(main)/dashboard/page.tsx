@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense } from 'react';
+import { Suspense, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { JobCard } from "@/components/job-card";
 import { Button } from "@/components/ui/button";
@@ -9,6 +9,17 @@ import type { Job } from "@/lib/types";
 import { Search, SlidersHorizontal, Plus } from "lucide-react";
 import Link from 'next/link';
 import { Card, CardDescription, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuCheckboxItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+  DropdownMenuSub,
+  DropdownMenuSubTrigger,
+  DropdownMenuSubContent
+} from "@/components/ui/dropdown-menu";
 
 const mockJobs: Job[] = [
   {
@@ -126,9 +137,33 @@ const mockPostedJobs: Job[] = [
   },
 ]
 
+const jobCategories = ["Tech", "Design", "Admin", "Management", "Retail", "Hospitality", "Events", "Labor", "Logistics", "Other"];
+
 function DashboardContent() {
   const searchParams = useSearchParams();
   const role = searchParams.get('role');
+
+  const [filters, setFilters] = useState({
+    chennai: false,
+    coimbatore: false,
+    madurai: false,
+    payHigh: false,
+    payMid: false,
+    payLow: false,
+    categories: new Set<string>(),
+  });
+
+  const handleCategoryChange = (category: string, checked: boolean) => {
+    setFilters(prev => {
+        const newCategories = new Set(prev.categories);
+        if(checked) {
+            newCategories.add(category);
+        } else {
+            newCategories.delete(category);
+        }
+        return {...prev, categories: newCategories};
+    })
+  }
 
   if (role === 'business') {
     return (
@@ -192,10 +227,72 @@ function DashboardContent() {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
           <Input placeholder="Search by job title, skill, or company" className="pl-10 text-base" />
         </div>
-        <Button variant="outline">
-          <SlidersHorizontal className="mr-2 h-4 w-4" />
-          Filters
-        </Button>
+        <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+                <Button variant="outline">
+                    <SlidersHorizontal className="mr-2 h-4 w-4" />
+                    Filters
+                </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-56">
+                <DropdownMenuLabel>Filter by</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuSub>
+                    <DropdownMenuSubTrigger>Category</DropdownMenuSubTrigger>
+                    <DropdownMenuSubContent>
+                         {jobCategories.map(cat => (
+                            <DropdownMenuCheckboxItem
+                                key={cat}
+                                checked={filters.categories.has(cat)}
+                                onCheckedChange={(checked) => handleCategoryChange(cat, checked)}
+                            >
+                                {cat}
+                            </DropdownMenuCheckboxItem>
+                         ))}
+                    </DropdownMenuSubContent>
+                </DropdownMenuSub>
+                <DropdownMenuSeparator />
+                 <DropdownMenuLabel>Location</DropdownMenuLabel>
+                 <DropdownMenuCheckboxItem
+                    checked={filters.chennai}
+                    onCheckedChange={(checked) => setFilters(prev => ({...prev, chennai: !!checked}))}
+                >
+                    Chennai
+                </DropdownMenuCheckboxItem>
+                <DropdownMenuCheckboxItem
+                    checked={filters.coimbatore}
+                    onCheckedChange={(checked) => setFilters(prev => ({...prev, coimbatore: !!checked}))}
+                >
+                    Coimbatore
+                </DropdownMenuCheckboxItem>
+                <DropdownMenuCheckboxItem
+                    checked={filters.madurai}
+                    onCheckedChange={(checked) => setFilters(prev => ({...prev, madurai: !!checked}))}
+                >
+                    Madurai
+                </DropdownMenuCheckboxItem>
+                 <DropdownMenuSeparator />
+                 <DropdownMenuLabel>Pay per day</DropdownMenuLabel>
+                 <DropdownMenuCheckboxItem
+                    checked={filters.payHigh}
+                    onCheckedChange={(checked) => setFilters(prev => ({...prev, payHigh: !!checked}))}
+                >
+                    ₹900 and above
+                </DropdownMenuCheckboxItem>
+                 <DropdownMenuCheckboxItem
+                    checked={filters.payMid}
+                    onCheckedChange={(checked) => setFilters(prev => ({...prev, payMid: !!checked}))}
+                >
+                    ₹700 - ₹900
+                </DropdownMenuCheckboxItem>
+                 <DropdownMenuCheckboxItem
+                    checked={filters.payLow}
+                    onCheckedChange={(checked) => setFilters(prev => ({...prev, payLow: !!checked}))}
+                >
+                    Below ₹700
+                </DropdownMenuCheckboxItem>
+            </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
