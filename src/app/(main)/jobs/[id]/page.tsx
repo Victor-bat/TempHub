@@ -1,9 +1,10 @@
 
+
 'use client';
 
-import React, { useContext } from 'react';
+import React, { useContext, Suspense } from 'react';
 import Link from "next/link";
-import { useParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 import { JobsContext } from '@/context/jobs-context';
 import CandidateMatching from "@/components/candidate-matching";
 import { Badge } from "@/components/ui/badge";
@@ -32,10 +33,12 @@ const categoryIcons: { [key in Job["category"]]: React.ElementType } = {
   Other: Briefcase,
 };
 
-
-export default function JobDetailPage() {
+function JobDetailContent() {
   const params = useParams();
+  const searchParams = useSearchParams();
   const id = params.id as string;
+  const role = searchParams.get('role');
+
   const { jobs, postedJobs } = useContext(JobsContext);
   const allJobs = [...jobs, ...postedJobs];
   const job = allJobs.find((j) => j.id === id);
@@ -44,7 +47,7 @@ export default function JobDetailPage() {
     return (
       <div className="container mx-auto p-8 text-center">
         <h1 className="text-2xl font-bold">Job not found</h1>
-        <Link href="/dashboard" className="mt-4 inline-block text-primary hover:underline">
+        <Link href="/dashboard?role=seeker" className="mt-4 inline-block text-primary hover:underline">
           Back to all jobs
         </Link>
       </div>
@@ -52,21 +55,27 @@ export default function JobDetailPage() {
   }
 
   const Icon = categoryIcons[job.category] || Briefcase;
+  
+  const isBusiness = role === 'business';
 
   const ApplyNowButton = () => (
     <Button size="lg" className="w-full" asChild>
       <Link href={`/jobs/${job.id}/apply`}>Apply Now</Link>
     </Button>
   );
+  
+  const ViewApplicantsButton = () => (
+     <Button size="lg" className="w-full">View Applicants</Button>
+  );
 
   return (
     <div className="container mx-auto max-w-4xl p-4 md:p-8">
       <Link
-        href="/dashboard?role=seeker"
+        href={isBusiness ? "/dashboard?role=business" : "/dashboard?role=seeker"}
         className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-4"
       >
         <ArrowLeft className="h-4 w-4" />
-        Back to Jobs
+        {isBusiness ? "Back to Your Job Posts" : "Back to Jobs"}
       </Link>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         <div className="md:col-span-2 space-y-6">
@@ -112,23 +121,31 @@ export default function JobDetailPage() {
           </Card>
           
           <div className="block md:hidden">
-            <ApplyNowButton />
+            {isBusiness ? <ViewApplicantsButton /> : <ApplyNowButton />}
           </div>
 
           <div className="block md:hidden">
-            <CandidateMatching jobDescription={job.description} />
+            {isBusiness && <CandidateMatching jobDescription={job.description} />}
           </div>
 
         </div>
         <div className="md:col-span-1 space-y-6">
             <div className="hidden md:block">
-              <ApplyNowButton />
+               {isBusiness ? <ViewApplicantsButton /> : <ApplyNowButton />}
             </div>
             <div className="hidden md:block">
-             <CandidateMatching jobDescription={job.description} />
+              {isBusiness && <CandidateMatching jobDescription={job.description} />}
             </div>
         </div>
       </div>
     </div>
   );
+}
+
+export default function JobDetailPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <JobDetailContent />
+    </Suspense>
+  )
 }

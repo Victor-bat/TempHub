@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { Suspense, useState, useMemo, useContext } from 'react';
@@ -130,27 +131,40 @@ function DashboardContent() {
           </Button>
         </div>
 
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {postedJobs.map((job) => (
-             <Card key={job.id} className="group flex flex-col">
-               <CardHeader>
-                <CardTitle className="font-headline text-xl">
-                  <Link href={`/jobs/${job.id}`} className="group-hover:text-primary transition-colors">
-                    {job.title}
-                  </Link>
-                </CardTitle>
-                <CardDescription>{job.company} - {job.location}</CardDescription>
-               </CardHeader>
-               <CardContent>
-                 <p className="text-sm text-muted-foreground">Status: <span className="text-green-500 font-semibold">Active</span></p>
-                 <p className="text-sm text-muted-foreground">Applicants: <span className="font-semibold text-foreground">5</span></p>
-               </CardContent>
-               <CardFooter>
-                 <Button variant="outline" className="w-full">View Applicants</Button>
-               </CardFooter>
-             </Card>
-          ))}
-        </div>
+        {postedJobs.length > 0 ? (
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {postedJobs.map((job) => (
+              <Card key={job.id} className="group flex flex-col">
+                <CardHeader>
+                  <CardTitle className="font-headline text-xl">
+                    <Link href={`/jobs/${job.id}?role=business`} className="group-hover:text-primary transition-colors">
+                      {job.title}
+                    </Link>
+                  </CardTitle>
+                  <CardDescription>{job.company} - {job.location}</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground">Status: <span className="text-green-500 font-semibold">Active</span></p>
+                  <p className="text-sm text-muted-foreground">Applicants: <span className="font-semibold text-foreground">5</span></p>
+                </CardContent>
+                <CardFooter>
+                  <Button variant="outline" className="w-full">View Applicants</Button>
+                </CardFooter>
+              </Card>
+            ))}
+          </div>
+        ) : (
+          <Card className="flex flex-col items-center justify-center text-center p-12">
+            <CardTitle className="font-headline text-2xl mb-2">No Jobs Posted Yet</CardTitle>
+            <CardDescription className="mb-4">Get started by posting your first job opening.</CardDescription>
+            <Button asChild>
+                <Link href="/jobs/post">
+                    <Plus className="mr-2 h-4 w-4" />
+                    Post New Job
+                </Link>
+            </Button>
+          </Card>
+        )}
       </div>
     );
   }
@@ -244,12 +258,21 @@ function DashboardContent() {
             </DropdownMenuContent>
         </DropdownMenu>
       </div>
-
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {filteredJobs.map((job) => (
-          <JobCard key={job.id} job={job} />
-        ))}
-      </div>
+      
+      {filteredJobs.length > 0 ? (
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {filteredJobs.map((job) => (
+            <JobCard key={job.id} job={job} />
+            ))}
+        </div>
+      ) : (
+        <Card className="text-center p-12">
+             <CardTitle className="font-headline text-2xl mb-2">No Jobs Found</CardTitle>
+            <CardDescription>
+                Your search and filter combination returned no results. Try widening your search.
+            </CardDescription>
+        </Card>
+      )}
     </div>
   );
 }
