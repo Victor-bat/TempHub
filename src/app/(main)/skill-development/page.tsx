@@ -32,7 +32,7 @@ const recommendedVideos = [
   {
     id: '5',
     title: 'Financial Planning for Gig Economy Workers',
-    videoId: '8j222l5uFxc',
+    videoId: '3ATA7D5WGzQ',
     description: 'Learn how to manage your finances, save for taxes, and plan for the future as a temporary worker.'
   },
   {
