@@ -3,6 +3,7 @@
 
 import React, { useContext } from 'react';
 import Link from "next/link";
+import { useParams } from 'next/navigation';
 import { JobsContext } from '@/context/jobs-context';
 import CandidateMatching from "@/components/candidate-matching";
 import { Badge } from "@/components/ui/badge";
@@ -32,7 +33,9 @@ const categoryIcons: { [key in Job["category"]]: React.ElementType } = {
 };
 
 
-export default function JobDetailPage({ params: { id } }: { params: { id: string } }) {
+export default function JobDetailPage() {
+  const params = useParams();
+  const id = params.id as string;
   const { jobs, postedJobs } = useContext(JobsContext);
   const allJobs = [...jobs, ...postedJobs];
   const job = allJobs.find((j) => j.id === id);

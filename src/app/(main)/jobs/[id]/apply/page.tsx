@@ -2,6 +2,7 @@
 'use client';
 
 import React, { useContext } from 'react';
+import { useParams } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -18,7 +19,9 @@ import { ArrowLeft, UploadCloud } from "lucide-react";
 import Link from "next/link";
 import { JobsContext } from '@/context/jobs-context';
 
-export default function ApplyJobPage({ params: { id } }: { params: { id: string } }) {
+export default function ApplyJobPage() {
+  const params = useParams();
+  const id = params.id as string;
   const { jobs, postedJobs } = useContext(JobsContext);
   const allJobs = [...jobs, ...postedJobs];
   const job = allJobs.find((j) => j.id === id);
