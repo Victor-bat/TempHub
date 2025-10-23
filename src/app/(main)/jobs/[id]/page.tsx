@@ -33,9 +33,10 @@ const categoryIcons: { [key in Job["category"]]: React.ElementType } = {
 
 
 export default function JobDetailPage({ params }: { params: { id: string } }) {
+  const { id } = params;
   const { jobs, postedJobs } = useContext(JobsContext);
   const allJobs = [...jobs, ...postedJobs];
-  const job = allJobs.find((j) => j.id === params.id);
+  const job = allJobs.find((j) => j.id === id);
 
   if (!job) {
     return (
