@@ -26,7 +26,7 @@ const recommendedVideos = [
   {
     id: '4',
     title: 'The 4 Communication Styles',
-    videoId: 'tB-s_R2-2sI',
+    videoId: 'IEUjZiO5vmg',
     description: 'Improve your verbal and non-verbal communication for professional success.'
   },
   {
