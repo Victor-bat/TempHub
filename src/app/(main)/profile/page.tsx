@@ -2,7 +2,7 @@
 'use client';
 
 import { useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -14,7 +14,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Edit, Save, Star, ThumbsUp, X, Camera, Building, Mail, Phone, Link as LinkIcon } from "lucide-react";
+import { Edit, Save, Star, ThumbsUp, X, Camera, Building, Mail, Phone, Link as LinkIcon, LogOut } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 
@@ -64,6 +64,7 @@ const initialBusiness = {
 };
 
 function SeekerProfile() {
+  const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
   const [user, setUser] = useState(initialUser);
   const [tempUser, setTempUser] = useState(initialUser);
@@ -108,6 +109,10 @@ function SeekerProfile() {
       };
       reader.readAsDataURL(e.target.files[0]);
     }
+  };
+
+  const handleLogout = () => {
+    router.push('/login');
   };
 
 
@@ -161,6 +166,10 @@ function SeekerProfile() {
             <Button variant="outline" size="icon" onClick={handleEditToggle}>
                 {isEditing ? <Save className="h-4 w-4" /> : <Edit className="h-4 w-4" />}
                 <span className="sr-only">{isEditing ? 'Save Profile' : 'Edit Profile'}</span>
+            </Button>
+            <Button variant="destructive" size="icon" onClick={handleLogout}>
+                <LogOut className="h-4 w-4" />
+                <span className="sr-only">Logout</span>
             </Button>
           </div>
         </CardHeader>
@@ -249,6 +258,7 @@ function SeekerProfile() {
 
 
 function BusinessProfile() {
+  const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
   const [business, setBusiness] = useState(initialBusiness);
   const [tempBusiness, setTempBusiness] = useState(initialBusiness);
@@ -282,6 +292,10 @@ function BusinessProfile() {
       };
       reader.readAsDataURL(e.target.files[0]);
     }
+  };
+
+  const handleLogout = () => {
+    router.push('/login');
   };
 
   const currentBusiness = isEditing ? tempBusiness : business;
@@ -326,6 +340,10 @@ function BusinessProfile() {
             <Button variant="outline" size="icon" onClick={handleEditToggle}>
                 {isEditing ? <Save className="h-4 w-4" /> : <Edit className="h-4 w-4" />}
                 <span className="sr-only">{isEditing ? 'Save Profile' : 'Edit Profile'}</span>
+            </Button>
+             <Button variant="destructive" size="icon" onClick={handleLogout}>
+                <LogOut className="h-4 w-4" />
+                <span className="sr-only">Logout</span>
             </Button>
           </div>
         </CardHeader>
@@ -402,5 +420,3 @@ export default function ProfilePage() {
 
   return <SeekerProfile />;
 }
-
-    
