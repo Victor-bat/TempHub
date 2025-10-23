@@ -7,38 +7,38 @@ import { BrainCircuit } from 'lucide-react';
 const recommendedVideos = [
   {
     id: '1',
-    title: 'Top 5 Skills to Develop in 2024',
-    videoId: 'c_ig-gC3v4g',
+    title: 'Top 10 Most In-Demand Skills for 2024',
+    videoId: 'S_45I8tO2Ug',
     description: 'Learn about the most in-demand skills for the current job market.'
   },
   {
     id: '2',
-    title: 'How to Write a Killer Resume',
-    videoId: 'y8Y_a-a3s-s',
+    title: 'How to Write a Great Resume',
+    videoId: 'pbczsLkv2Cc',
     description: 'Craft a resume that stands out and gets you noticed by recruiters.'
   },
   {
     id: '3',
-    title: 'Mastering the Job Interview',
-    videoId: 'ttGg5w-J6-s',
+    title: 'Mastering the Job Interview: Pro Tips',
+    videoId: 'pvQGSA_eEuk',
     description: 'Tips and tricks to help you ace your next job interview with confidence.'
   },
   {
     id: '4',
-    title: 'Effective Communication Skills for the Workplace',
-    videoId: 'e_b8i-s-fA8',
+    title: 'The 4 Communication Styles',
+    videoId: 'tB-s_R2-2sI',
     description: 'Improve your verbal and non-verbal communication for professional success.'
   },
   {
     id: '5',
-    title: 'Financial Management for Gig Workers & Freelancers',
-    videoId: 'MdwAayr5UI8',
+    title: 'Financial Planning for Gig Economy Workers',
+    videoId: '8j222l5uFxc',
     description: 'Learn how to manage your finances, save for taxes, and plan for the future as a temporary worker.'
   },
   {
     id: '6',
-    title: 'How to Adapt Quickly to a New Work Environment',
-    videoId: '3-U0t5u_a-E',
+    title: 'How To Adapt To A New Work Environment',
+    videoId: 'jAhG7YEX3H8',
     description: 'Tips for making a great impression and getting up to speed quickly in any new temporary role.'
   }
 ];
