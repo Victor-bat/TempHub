@@ -2,6 +2,7 @@
 'use client';
 
 import { useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -13,14 +14,14 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Edit, Save, Star, ThumbsUp, X, Camera } from "lucide-react";
+import { Edit, Save, Star, ThumbsUp, X, Camera, Building, Mail, Phone, Link as LinkIcon } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 
 const initialUser = {
   name: "Alice Johnson",
   email: "alice.j@email.com",
-  avatar: "https://placehold.co/100x100.png",
+  avatar: "https://placehold.co/100x100/F9C74F/4D4D4D/png?text=AJ",
   bio: "Senior full-stack developer with over 5 years of experience in building modern, scalable web applications. Passionate about clean code and great user experiences.",
   skills: ["React", "Node.js", "TypeScript", "Next.js", "GraphQL", "PostgreSQL"],
   experience: [
@@ -52,7 +53,17 @@ const initialUser = {
   ]
 };
 
-export default function ProfilePage() {
+const initialBusiness = {
+    name: "Innovate Inc.",
+    email: "contact@innovate.com",
+    logo: "https://placehold.co/100x100/F9C74F/4D4D4D/png?text=II",
+    bio: "Innovate Inc. is a leading technology firm specializing in custom software development and cloud solutions. We empower businesses to achieve their full potential through cutting-edge technology.",
+    industry: "Technology",
+    website: "www.innovate.com",
+    location: "Chennai, TN"
+};
+
+function SeekerProfile() {
   const [isEditing, setIsEditing] = useState(false);
   const [user, setUser] = useState(initialUser);
   const [tempUser, setTempUser] = useState(initialUser);
@@ -235,3 +246,161 @@ export default function ProfilePage() {
     </div>
   );
 }
+
+
+function BusinessProfile() {
+  const [isEditing, setIsEditing] = useState(false);
+  const [business, setBusiness] = useState(initialBusiness);
+  const [tempBusiness, setTempBusiness] = useState(initialBusiness);
+
+  const handleEditToggle = () => {
+    if (isEditing) {
+      setBusiness(tempBusiness);
+    } else {
+      setTempBusiness(business);
+    }
+    setIsEditing(!isEditing);
+  };
+
+  const handleCancel = () => {
+    setTempBusiness(initialBusiness);
+    setIsEditing(false);
+  }
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      const {name, value} = e.target;
+      setTempBusiness(prev => ({...prev, [name]: value}));
+  }
+
+  const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        if (event.target?.result) {
+          setTempBusiness(prev => ({ ...prev, logo: event.target!.result as string }));
+        }
+      };
+      reader.readAsDataURL(e.target.files[0]);
+    }
+  };
+
+  const currentBusiness = isEditing ? tempBusiness : business;
+
+  return (
+    <div className="container mx-auto max-w-3xl p-4 md:p-8 space-y-8">
+      <Card>
+        <CardHeader className="relative">
+          <div className="flex items-center space-x-4">
+            <div className="relative">
+                <Avatar className="h-20 w-20">
+                    <AvatarImage src={currentBusiness.logo} data-ai-hint="company logo" />
+                    <AvatarFallback>{currentBusiness.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+                </Avatar>
+                {isEditing && (
+                    <label htmlFor="logo-upload" className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full cursor-pointer opacity-0 hover:opacity-100 transition-opacity">
+                        <Camera className="h-6 w-6 text-white" />
+                        <input id="logo-upload" type="file" className="hidden" accept="image/*" onChange={handleLogoChange} />
+                    </label>
+                )}
+            </div>
+            <div>
+              {isEditing ? (
+                 <Input name="name" value={tempBusiness.name} onChange={handleInputChange} className="text-3xl font-bold font-headline mb-1" />
+              ) : (
+                <CardTitle className="font-headline text-3xl">{business.name}</CardTitle>
+              )}
+              {isEditing ? (
+                 <Input name="industry" value={tempBusiness.industry} onChange={handleInputChange} placeholder="Industry" className="text-md" />
+              ) : (
+                <CardDescription className="text-md">{business.industry}</CardDescription>
+              )}
+            </div>
+          </div>
+          <div className="absolute top-4 right-4 flex gap-2">
+            {isEditing && (
+                 <Button variant="outline" size="icon" onClick={handleCancel}>
+                    <X className="h-4 w-4" />
+                    <span className="sr-only">Cancel</span>
+                </Button>
+            )}
+            <Button variant="outline" size="icon" onClick={handleEditToggle}>
+                {isEditing ? <Save className="h-4 w-4" /> : <Edit className="h-4 w-4" />}
+                <span className="sr-only">{isEditing ? 'Save Profile' : 'Edit Profile'}</span>
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-6">
+            <div>
+              <h3 className="font-headline text-lg font-semibold">About {isEditing ? tempBusiness.name : business.name}</h3>
+              {isEditing ? (
+                <Textarea name="bio" value={tempBusiness.bio} onChange={handleInputChange} className="mt-1 min-h-[100px]" />
+              ) : (
+                <p className="mt-1 text-muted-foreground">{business.bio}</p>
+              )}
+            </div>
+            
+            <Separator />
+
+            <div>
+              <h3 className="font-headline text-lg font-semibold">Company Details</h3>
+              <div className="mt-2 space-y-2">
+                {isEditing ? (
+                  <>
+                    <div className="flex items-center gap-2">
+                        <Mail className="h-4 w-4 text-muted-foreground" />
+                        <Input name="email" value={tempBusiness.email} onChange={handleInputChange} placeholder="Contact Email" />
+                    </div>
+                     <div className="flex items-center gap-2">
+                        <LinkIcon className="h-4 w-4 text-muted-foreground" />
+                        <Input name="website" value={tempBusiness.website} onChange={handleInputChange} placeholder="Website URL" />
+                    </div>
+                     <div className="flex items-center gap-2">
+                        <Building className="h-4 w-4 text-muted-foreground" />
+                        <Input name="location" value={tempBusiness.location} onChange={handleInputChange} placeholder="Location" />
+                    </div>
+                  </>
+                ) : (
+                   <>
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                        <Mail className="h-4 w-4"/> <span>{business.email}</span>
+                    </div>
+                     <div className="flex items-center gap-2 text-muted-foreground">
+                        <LinkIcon className="h-4 w-4" /> <a href={`https://${business.website}`} target="_blank" rel="noreferrer" className="text-primary hover:underline">{business.website}</a>
+                    </div>
+                     <div className="flex items-center gap-2 text-muted-foreground">
+                        <Building className="h-4 w-4" /> <span>{business.location}</span>
+                    </div>
+                   </>
+                )}
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+            <CardTitle className="font-headline text-2xl">Posted Jobs</CardTitle>
+            <CardDescription>Manage jobs posted by {business.name}.</CardDescription>
+        </CardHeader>
+        <CardContent>
+            <p className="text-sm text-muted-foreground text-center py-4">You have not posted any jobs yet.</p>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+export default function ProfilePage() {
+  const searchParams = useSearchParams();
+  const role = searchParams.get('role');
+
+  if (role === 'business') {
+    return <BusinessProfile />;
+  }
+
+  return <SeekerProfile />;
+}
+
+    
