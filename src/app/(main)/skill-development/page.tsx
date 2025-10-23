@@ -14,7 +14,7 @@ const recommendedVideos = [
   {
     id: '2',
     title: 'How to Write a Killer Resume',
-    videoId: 'https_www.youtube.com/watch?v=y8Y_a-a3s-s',
+    videoId: 'y8Y_a-a3s-s',
     description: 'Craft a resume that stands out and gets you noticed by recruiters.'
   },
   {
@@ -25,9 +25,21 @@ const recommendedVideos = [
   },
   {
     id: '4',
-    title: 'Effective Communication Skills',
-    videoId: 'https_www.youtube.com/watch?v=e_b8i-s-fA8',
+    title: 'Effective Communication Skills for the Workplace',
+    videoId: 'e_b8i-s-fA8',
     description: 'Improve your verbal and non-verbal communication for professional success.'
+  },
+  {
+    id: '5',
+    title: 'Financial Management for Gig Workers & Freelancers',
+    videoId: 'MdwAayr5UI8',
+    description: 'Learn how to manage your finances, save for taxes, and plan for the future as a temporary worker.'
+  },
+  {
+    id: '6',
+    title: 'How to Adapt Quickly to a New Work Environment',
+    videoId: '3-U0t5u_a-E',
+    description: 'Tips for making a great impression and getting up to speed quickly in any new temporary role.'
   }
 ];
 
@@ -55,7 +67,7 @@ export default function SkillDevelopmentPage() {
               <div className="aspect-video overflow-hidden rounded-lg border">
                 <iframe
                   className="w-full h-full"
-                  src={`https://www.youtube.com/embed/${video.videoId.split('v=')[1] || video.videoId}`}
+                  src={`https://www.youtube.com/embed/${video.videoId}`}
                   title={video.title}
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen
