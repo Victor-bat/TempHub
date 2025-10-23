@@ -112,7 +112,7 @@ function SeekerProfile() {
   };
 
   const handleLogout = () => {
-    router.push('/login');
+    router.push('/');
   };
 
 
@@ -295,7 +295,7 @@ function BusinessProfile() {
   };
 
   const handleLogout = () => {
-    router.push('/login');
+    router.push('/');
   };
 
   const currentBusiness = isEditing ? tempBusiness : business;
@@ -420,3 +420,5 @@ export default function ProfilePage() {
 
   return <SeekerProfile />;
 }
+
+    
