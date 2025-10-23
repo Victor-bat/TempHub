@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useContext } from "react";
+import { useState, useContext, Suspense } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
@@ -24,7 +24,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { JobsContext } from "@/context/jobs-context";
 import type { Job } from "@/lib/types";
 
-export default function PostJobPage() {
+function PostJobContent() {
   const router = useRouter();
   const { addJob, addPostedJob } = useContext(JobsContext);
 
@@ -86,16 +86,16 @@ export default function PostJobPage() {
                   <SelectValue placeholder="Select a category" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="tech">Tech</SelectItem>
-                  <SelectItem value="design">Design</SelectItem>
-                  <SelectItem value="admin">Admin</SelectItem>
-                  <SelectItem value="management">Management</SelectItem>
-                  <SelectItem value="retail">Retail</SelectItem>
-                  <SelectItem value="hospitality">Hospitality</SelectItem>
-                  <SelectItem value="events">Events</SelectItem>
-                  <SelectItem value="labor">Labor</SelectItem>
-                  <SelectItem value="logistics">Logistics</SelectItem>
-                  <SelectItem value="other">Other</SelectItem>
+                  <SelectItem value="Tech">Tech</SelectItem>
+                  <SelectItem value="Design">Design</SelectItem>
+                  <SelectItem value="Admin">Admin</SelectItem>
+                  <SelectItem value="Management">Management</SelectItem>
+                  <SelectItem value="Retail">Retail</SelectItem>
+                  <SelectItem value="Hospitality">Hospitality</SelectItem>
+                  <SelectItem value="Events">Events</SelectItem>
+                  <SelectItem value="Labor">Labor</SelectItem>
+                  <SelectItem value="Logistics">Logistics</SelectItem>
+                  <SelectItem value="Other">Other</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -150,4 +150,12 @@ export default function PostJobPage() {
       </Card>
     </div>
   );
+}
+
+export default function PostJobPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <PostJobContent />
+    </Suspense>
+  )
 }
