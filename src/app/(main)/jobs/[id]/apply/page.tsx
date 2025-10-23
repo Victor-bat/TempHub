@@ -1,4 +1,7 @@
 
+'use client';
+
+import React, { useContext } from 'react';
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -11,39 +14,14 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import type { Job } from "@/lib/types";
 import { ArrowLeft, UploadCloud } from "lucide-react";
 import Link from "next/link";
+import { JobsContext } from '@/context/jobs-context';
 
-// Using the same mock data for now
-const mockJobs: Job[] = [
-    {
-    id: "1",
-    title: "React Developer",
-    company: "TCS",
-    location: "Chennai, TN",
-    payRate: "₹900/day",
-    duration: "2 Months",
-    description: "Seeking an experienced React developer to help build our next-generation user interface.",
-    skills: ["React", "TypeScript", "Next.js"],
-    category: "Tech",
-  },
-  {
-    id: "5",
-    title: "Event Staff for Wedding",
-    company: "Chennai Events",
-    location: "Chennai, TN",
-    payRate: "₹800/day",
-    duration: "1 Day",
-    description: "Energetic event staff needed for a wedding reception.",
-    skills: ["Customer Service", "Teamwork"],
-    category: "Events",
-  },
-];
-
-
-export default function ApplyJobPage({ params }: { params: { id: string } }) {
-  const job = mockJobs.find((j) => j.id === params.id);
+export default function ApplyJobPage({ params: { id } }: { params: { id: string } }) {
+  const { jobs, postedJobs } = useContext(JobsContext);
+  const allJobs = [...jobs, ...postedJobs];
+  const job = allJobs.find((j) => j.id === id);
 
   if (!job) {
     return (
