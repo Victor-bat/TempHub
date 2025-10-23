@@ -38,7 +38,7 @@ const recommendedVideos = [
   {
     id: '6',
     title: 'How To Adapt To A New Work Environment',
-    videoId: 'jAhG7YEX3H8',
+    videoId: 'WgR6mUSsEig',
     description: 'Tips for making a great impression and getting up to speed quickly in any new temporary role.'
   }
 ];
