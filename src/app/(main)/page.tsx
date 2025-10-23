@@ -1,561 +1,216 @@
 
 "use client";
 
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { Button } from '@/components/ui/button';
 
-// Types for component props
-interface HeroProps {
-  trustBadge?: {
-    text: string;
-    icons?: string[];
-  };
-  headline: {
-    line1: string;
-    line2: string;
-  };
-  subtitle: string;
-  buttons?: {
-    primary?: {
-      text: string;
-      onClick?: () => void;
-    };
-    secondary?: {
-      text: string;
-      onClick?: () => void;
-    };
-  };
-  className?: string;
+declare global {
+  interface Window {
+    THREE: any
+  }
 }
 
-// Reusable Shader Background Hook
-const useShaderBackground = () => {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const animationFrameRef = useRef<number>();
-  const rendererRef = useRef<any | null>(null);
-  const pointersRef = useRef<any | null>(null);
-
-  // WebGL Renderer class
-  class WebGLRenderer {
-    private canvas: HTMLCanvasElement;
-    private gl: WebGL2RenderingContext;
-    private program: WebGLProgram | null = null;
-    private vs: WebGLShader | null = null;
-    private fs: WebGLShader | null = null;
-    private buffer: WebGLBuffer | null = null;
-    private scale: number;
-    private shaderSource: string;
-    private mouseMove = [0, 0];
-    private mouseCoords = [0, 0];
-    private pointerCoords = [0, 0];
-    private nbrOfPointers = 0;
-
-    private vertexSrc = `#version 300 es
-precision highp float;
-in vec4 position;
-void main(){gl_Position=position;}`;
-
-    private vertices = [-1, 1, -1, -1, 1, 1, 1, -1];
-
-    constructor(canvas: HTMLCanvasElement, scale: number) {
-      this.canvas = canvas;
-      this.scale = scale;
-      this.gl = canvas.getContext('webgl2')!;
-      this.gl.viewport(0, 0, canvas.width * scale, canvas.height * scale);
-      this.shaderSource = defaultShaderSource;
-    }
-
-    updateShader(source: string) {
-      this.reset();
-      this.shaderSource = source;
-      this.setup();
-      this.init();
-    }
-
-    updateMove(deltas: number[]) {
-      this.mouseMove = deltas;
-    }
-
-    updateMouse(coords: number[]) {
-      this.mouseCoords = coords;
-    }
-
-    updatePointerCoords(coords: number[]) {
-      this.pointerCoords = coords;
-    }
-
-    updatePointerCount(nbr: number) {
-      this.nbrOfPointers = nbr;
-    }
-
-    updateScale(scale: number) {
-      this.scale = scale;
-      this.gl.viewport(0, 0, this.canvas.width * scale, this.canvas.height * scale);
-    }
-
-    compile(shader: WebGLShader, source: string) {
-      const gl = this.gl;
-      gl.shaderSource(shader, source);
-      gl.compileShader(shader);
-
-      if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-        const error = gl.getShaderInfoLog(shader);
-        console.error('Shader compilation error:', error);
-      }
-    }
-
-    test(source: string) {
-      let result = null;
-      const gl = this.gl;
-      const shader = gl.createShader(gl.FRAGMENT_SHADER)!;
-      gl.shaderSource(shader, source);
-      gl.compileShader(shader);
-
-      if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-        result = gl.getShaderInfoLog(shader);
-      }
-      gl.deleteShader(shader);
-      return result;
-    }
-
-    reset() {
-      const gl = this.gl;
-      if (this.program && !gl.getProgramParameter(this.program, gl.DELETE_STATUS)) {
-        if (this.vs) {
-          gl.detachShader(this.program, this.vs);
-          gl.deleteShader(this.vs);
-        }
-        if (this.fs) {
-          gl.detachShader(this.program, this.fs);
-          gl.deleteShader(this.fs);
-        }
-        gl.deleteProgram(this.program);
-      }
-    }
-
-    setup() {
-      const gl = this.gl;
-      this.vs = gl.createShader(gl.VERTEX_SHADER)!;
-      this.fs = gl.createShader(gl.FRAGMENT_SHADER)!;
-      this.compile(this.vs, this.vertexSrc);
-      this.compile(this.fs, this.shaderSource);
-      this.program = gl.createProgram()!;
-      gl.attachShader(this.program, this.vs);
-      gl.attachShader(this.program, this.fs);
-      gl.linkProgram(this.program);
-
-      if (!gl.getProgramParameter(this.program, gl.LINK_STATUS)) {
-        console.error(gl.getProgramInfoLog(this.program));
-      }
-    }
-
-    init() {
-      const gl = this.gl;
-      const program = this.program!;
-      
-      this.buffer = gl.createBuffer();
-      gl.bindBuffer(gl.ARRAY_BUFFER, this.buffer);
-      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.vertices), gl.STATIC_DRAW);
-
-      const position = gl.getAttribLocation(program, 'position');
-      gl.enableVertexAttribArray(position);
-      gl.vertexAttribPointer(position, 2, gl.FLOAT, false, 0, 0);
-
-      (program as any).resolution = gl.getUniformLocation(program, 'resolution');
-      (program as any).time = gl.getUniformLocation(program, 'time');
-      (program as any).move = gl.getUniformLocation(program, 'move');
-      (program as any).touch = gl.getUniformLocation(program, 'touch');
-      (program as any).pointerCount = gl.getUniformLocation(program, 'pointerCount');
-      (program as any).pointers = gl.getUniformLocation(program, 'pointers');
-    }
-
-    render(now = 0) {
-      const gl = this.gl;
-      const program = this.program;
-      
-      if (!program || gl.getProgramParameter(program, gl.DELETE_STATUS)) return;
-
-      gl.clearColor(0, 0, 0, 1);
-      gl.clear(gl.COLOR_BUFFER_BIT);
-      gl.useProgram(program);
-      gl.bindBuffer(gl.ARRAY_BUFFER, this.buffer);
-      
-      gl.uniform2f((program as any).resolution, this.canvas.width, this.canvas.height);
-      gl.uniform1f((program as any).time, now * 1e-3);
-      gl.uniform2f((program as any).move, ...this.mouseMove);
-      gl.uniform2f((program as any).touch, ...this.mouseCoords);
-      gl.uniform1i((program as any).pointerCount, this.nbrOfPointers);
-      gl.uniform2fv((program as any).pointers, this.pointerCoords);
-      gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-    }
-  }
-
-  // Pointer Handler class
-  class PointerHandler {
-    private scale: number;
-    private active = false;
-    private pointers = new Map<number, number[]>();
-    private lastCoords = [0, 0];
-    private moves = [0, 0];
-
-    constructor(element: HTMLCanvasElement, scale: number) {
-      this.scale = scale;
-      
-      const map = (element: HTMLCanvasElement, scale: number, x: number, y: number) => 
-        [x * scale, element.height - y * scale];
-
-      element.addEventListener('pointerdown', (e) => {
-        this.active = true;
-        this.pointers.set(e.pointerId, map(element, this.getScale(), e.clientX, e.clientY));
-      });
-
-      element.addEventListener('pointerup', (e) => {
-        if (this.count === 1) {
-          this.lastCoords = this.first;
-        }
-        this.pointers.delete(e.pointerId);
-        this.active = this.pointers.size > 0;
-      });
-
-      element.addEventListener('pointerleave', (e) => {
-        if (this.count === 1) {
-          this.lastCoords = this.first;
-        }
-        this.pointers.delete(e.pointerId);
-        this.active = this.pointers.size > 0;
-      });
-
-      element.addEventListener('pointermove', (e) => {
-        if (!this.active) return;
-        this.lastCoords = [e.clientX, e.clientY];
-        this.pointers.set(e.pointerId, map(element, this.getScale(), e.clientX, e.clientY));
-        this.moves = [this.moves[0] + e.movementX, this.moves[1] + e.movementY];
-      });
-    }
-
-    getScale() {
-      return this.scale;
-    }
-
-    updateScale(scale: number) {
-      this.scale = scale;
-    }
-
-    get count() {
-      return this.pointers.size;
-    }
-
-    get move() {
-      return this.moves;
-    }
-
-    get coords() {
-      return this.pointers.size > 0 
-        ? Array.from(this.pointers.values()).flat() 
-        : [0, 0];
-    }
-
-    get first() {
-      const firstValue = this.pointers.values().next().value;
-      return firstValue ? [firstValue[0], firstValue[1]] : this.lastCoords;
-    }
-  }
-
-  const resize = () => {
-    if (!canvasRef.current) return;
-    
-    const canvas = canvasRef.current;
-    const dpr = Math.max(1, 0.5 * window.devicePixelRatio);
-    
-    canvas.width = window.innerWidth * dpr;
-    canvas.height = window.innerHeight * dpr;
-    
-    if (rendererRef.current) {
-      rendererRef.current.updateScale(dpr);
-    }
-  };
-
-  const loop = (now: number) => {
-    if (!rendererRef.current || !pointersRef.current) return;
-    
-    rendererRef.current.updateMouse(pointersRef.current.first);
-    rendererRef.current.updatePointerCount(pointersRef.current.count);
-    rendererRef.current.updatePointerCoords(pointersRef.current.coords);
-    rendererRef.current.updateMove(pointersRef.current.move);
-    rendererRef.current.render(now);
-    animationFrameRef.current = requestAnimationFrame(loop);
-  };
+function ShaderAnimation() {
+  const containerRef = useRef<HTMLDivElement>(null)
+  const sceneRef = useRef<{
+    camera: any
+    scene: any
+    renderer: any
+    uniforms: any
+    animationId: number | null
+  }>({
+    camera: null,
+    scene: null,
+    renderer: null,
+    uniforms: null,
+    animationId: null,
+  })
 
   useEffect(() => {
-    if (!canvasRef.current) return;
-
-    const canvas = canvasRef.current;
-    const dpr = Math.max(1, 0.5 * window.devicePixelRatio);
-    
-    rendererRef.current = new WebGLRenderer(canvas, dpr);
-    pointersRef.current = new PointerHandler(canvas, dpr);
-    
-    rendererRef.current.setup();
-    rendererRef.current.init();
-    
-    resize();
-    
-    if (rendererRef.current.test(defaultShaderSource) === null) {
-      rendererRef.current.updateShader(defaultShaderSource);
+    // Load Three.js dynamically
+    const script = document.createElement("script")
+    script.src = "https://cdnjs.cloudflare.com/ajax/libs/three.js/89/three.min.js"
+    script.async = true
+    script.onload = () => {
+      if (containerRef.current && window.THREE) {
+        initThreeJS()
+      }
     }
-    
-    loop(0);
-    
-    window.addEventListener('resize', resize);
-    
+    document.head.appendChild(script)
+
     return () => {
-      window.removeEventListener('resize', resize);
-      if (animationFrameRef.current) {
-        cancelAnimationFrame(animationFrameRef.current);
+      // Cleanup
+      if (sceneRef.current.animationId) {
+        cancelAnimationFrame(sceneRef.current.animationId)
       }
-      if (rendererRef.current) {
-        rendererRef.current.reset();
+      if (sceneRef.current.renderer) {
+         if (containerRef.current && containerRef.current.contains(sceneRef.current.renderer.domElement)) {
+            containerRef.current.removeChild(sceneRef.current.renderer.domElement);
+         }
+        sceneRef.current.renderer.dispose()
       }
-    };
-  }, []);
+      try {
+        document.head.removeChild(script)
+      } catch (e) {
+        // script might have been removed by other means
+      }
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
-  return canvasRef;
-};
+  const initThreeJS = () => {
+    if (!containerRef.current || !window.THREE) return
 
-// Reusable Hero Component
-const Hero: React.FC<HeroProps> = ({
-  trustBadge,
-  headline,
-  subtitle,
-  buttons,
-  className = ""
-}) => {
-  const canvasRef = useShaderBackground();
+    const THREE = window.THREE
+    const container = containerRef.current
+
+    // Clear any existing content
+    container.innerHTML = ""
+
+    // Initialize camera
+    const camera = new THREE.Camera()
+    camera.position.z = 1
+
+    // Initialize scene
+    const scene = new THREE.Scene()
+
+    // Create geometry
+    const geometry = new THREE.PlaneBufferGeometry(2, 2)
+
+    // Define uniforms
+    const uniforms = {
+      time: { type: "f", value: 1.0 },
+      resolution: { type: "v2", value: new THREE.Vector2() },
+    }
+
+    // Vertex shader
+    const vertexShader = `
+      void main() {
+        gl_Position = vec4( position, 1.0 );
+      }
+    `
+
+    // Fragment shader for light yellow lines
+    const fragmentShader = `
+      #define TWO_PI 6.2831853072
+      #define PI 3.14159265359
+
+      precision highp float;
+      uniform vec2 resolution;
+      uniform float time;
+        
+      float random (in float x) {
+          return fract(sin(x)*1e4);
+      }
+      
+      varying vec2 vUv;
+
+      void main(void) {
+        vec2 uv = (gl_FragCoord.xy * 2.0 - resolution.xy) / min(resolution.x, resolution.y);
+        
+        vec2 fMosaicScal = vec2(4.0, 2.0);
+        vec2 vScreenSize = vec2(256.0, 256.0);
+        uv.x = floor(uv.x * vScreenSize.x / fMosaicScal.x) / (vScreenSize.x / fMosaicScal.x);
+        uv.y = floor(uv.y * vScreenSize.y / fMosaicScal.y) / (vScreenSize.y / fMosaicScal.y);       
+          
+        float t = time*0.06+random(uv.x)*0.4;
+        float lineWidth = 0.0008;
+
+        float intensity = 0.0;
+        for(int i=0; i < 5; i++){
+            intensity += lineWidth*float(i*i) / abs(fract(t + float(i)*0.01)*1.0 - length(uv));        
+        }
+
+        // Light yellow color: (R=1.0, G=1.0, B=0.8)
+        vec3 color = vec3(1.0, 1.0, 0.8) * intensity;
+
+        gl_FragColor = vec4(color,1.0);
+      }
+    `
+
+    // Create material
+    const material = new THREE.ShaderMaterial({
+      uniforms: uniforms,
+      vertexShader: vertexShader,
+      fragmentShader: fragmentShader,
+    })
+
+    // Create mesh and add to scene
+    const mesh = new THREE.Mesh(geometry, material)
+    scene.add(mesh)
+
+    // Initialize renderer
+    const renderer = new THREE.WebGLRenderer()
+    renderer.setPixelRatio(window.devicePixelRatio)
+    container.appendChild(renderer.domElement)
+
+    // Store references
+    sceneRef.current = {
+      camera,
+      scene,
+      renderer,
+      uniforms,
+      animationId: null,
+    }
+
+    // Handle resize
+    const onWindowResize = () => {
+      const rect = container.getBoundingClientRect()
+      renderer.setSize(rect.width, rect.height)
+      uniforms.resolution.value.x = renderer.domElement.width
+      uniforms.resolution.value.y = renderer.domElement.height
+    }
+
+    onWindowResize()
+    window.addEventListener("resize", onWindowResize, false)
+
+    // Animation loop
+    const animate = () => {
+      if (!sceneRef.current.renderer) return;
+      sceneRef.current.animationId = requestAnimationFrame(animate)
+      uniforms.time.value += 0.05
+      renderer.render(scene, camera)
+    }
+
+    animate()
+  }
 
   return (
-    <div className={`relative w-full h-screen overflow-hidden bg-black ${className}`}>
-      <style jsx>{`
-        @keyframes fade-in-down {
-          from {
-            opacity: 0;
-            transform: translateY(-20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        
-        @keyframes fade-in-up {
-          from {
-            opacity: 0;
-            transform: translateY(30px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        
-        .animate-fade-in-down {
-          animation: fade-in-down 0.8s ease-out forwards;
-        }
-        
-        .animate-fade-in-up {
-          animation: fade-in-up 0.8s ease-out forwards;
-          opacity: 0;
-        }
-        
-        .animation-delay-200 {
-          animation-delay: 0.2s;
-        }
-        
-        .animation-delay-400 {
-          animation-delay: 0.4s;
-        }
-        
-        .animation-delay-600 {
-          animation-delay: 0.6s;
-        }
-        
-        .animation-delay-800 {
-          animation-delay: 0.8s;
-        }
-        
-        @keyframes gradient-shift {
-          0% { background-position: 0% 50%; }
-          50% { background-position: 100% 50%; }
-          100% { background-position: 0% 50%; }
-        }
-        
-        .animate-gradient {
-          background-size: 200% 200%;
-          animation: gradient-shift 3s ease infinite;
-        }
-      `}</style>
-      
-      <canvas
-        ref={canvasRef}
-        className="absolute inset-0 w-full h-full object-contain touch-none"
-        style={{ background: 'black' }}
-      />
-      
-      {/* Hero Content Overlay */}
-      <div className="absolute inset-0 z-10 flex flex-col items-center justify-center text-white">
-        {/* Trust Badge */}
-        {trustBadge && (
-          <div className="mb-8 animate-fade-in-down">
-            <div className="flex items-center gap-2 px-6 py-3 bg-orange-500/10 backdrop-blur-md border border-orange-300/30 rounded-full text-sm">
-              {trustBadge.icons && (
-                <div className="flex">
-                  {trustBadge.icons.map((icon, index) => (
-                    <span key={index} className={`text-${index === 0 ? 'yellow' : index === 1 ? 'orange' : 'amber'}-300`}>
-                      {icon}
-                    </span>
-                  ))}
-                </div>
-              )}
-              <span className="text-orange-100">{trustBadge.text}</span>
-            </div>
-          </div>
-        )}
+    <div
+      ref={containerRef}
+      className="w-full h-full absolute inset-0" 
+    />
+  )
+}
 
-        <div className="text-center space-y-6 max-w-5xl mx-auto px-4">
-          {/* Main Heading with Animation */}
-          <div className="space-y-2">
-            <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold bg-gradient-to-r from-orange-300 via-yellow-400 to-amber-300 bg-clip-text text-transparent animate-fade-in-up animation-delay-200">
-              {headline.line1}
-            </h1>
-            <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold bg-gradient-to-r from-yellow-300 via-orange-400 to-red-400 bg-clip-text text-transparent animate-fade-in-up animation-delay-400">
-              {headline.line2}
-            </h1>
-          </div>
-          
-          {/* Subtitle with Animation */}
-          <div className="max-w-3xl mx-auto animate-fade-in-up animation-delay-600">
-            <p className="text-lg md:text-xl lg:text-2xl text-orange-100/90 font-light leading-relaxed">
-              {subtitle}
-            </p>
-          </div>
-          
-          {/* CTA Buttons with Animation */}
-          {buttons && (
-            <div className="flex flex-col sm:flex-row gap-4 justify-center mt-10 animate-fade-in-up animation-delay-800">
-              {buttons.primary && (
-                <button 
-                  onClick={buttons.primary.onClick}
-                  className="px-8 py-4 bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 text-black rounded-full font-semibold text-lg transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-orange-500/25"
-                >
-                  {buttons.primary.text}
-                </button>
-              )}
-              {buttons.secondary && (
-                <button 
-                  onClick={buttons.secondary.onClick}
-                  className="px-8 py-4 bg-orange-500/10 hover:bg-orange-500/20 border border-orange-300/30 hover:border-orange-300/50 text-orange-100 rounded-full font-semibold text-lg transition-all duration-300 hover:scale-105 backdrop-blur-sm"
-                >
-                  {buttons.secondary.text}
-                </button>
-              )}
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const defaultShaderSource = `#version 300 es
-/*********
-* made by Matthias Hurrle (@atzedent)
-*
-*	To explore strange new worlds, to seek out new life
-*	and new civilizations, to boldly go where no man has
-*	gone before.
-*/
-precision highp float;
-out vec4 O;
-uniform vec2 resolution;
-uniform float time;
-#define FC gl_FragCoord.xy
-#define T time
-#define R resolution
-#define MN min(R.x,R.y)
-// Returns a pseudo random number for a given point (white noise)
-float rnd(vec2 p) {
-  p=fract(p*vec2(12.9898,78.233));
-  p+=dot(p,p+34.56);
-  return fract(p.x*p.y);
-}
-// Returns a pseudo random number for a given point (value noise)
-float noise(in vec2 p) {
-  vec2 i=floor(p), f=fract(p), u=f*f*(3.-2.*f);
-  float
-  a=rnd(i),
-  b=rnd(i+vec2(1,0)),
-  c=rnd(i+vec2(0,1)),
-  d=rnd(i+1.);
-  return mix(mix(a,b,u.x),mix(c,d,u.x),u.y);
-}
-// Returns a pseudo random number for a given point (fractal noise)
-float fbm(vec2 p) {
-  float t=.0, a=1.; mat2 m=mat2(1.,-.5,.2,1.2);
-  for (int i=0; i<5; i++) {
-    t+=a*noise(p);
-    p*=2.*m;
-    a*=.5;
-  }
-  return t;
-}
-float clouds(vec2 p) {
-	float d=1., t=.0;
-	for (float i=.0; i<3.; i++) {
-		float a=d*fbm(i*10.+p.x*.2+.2*(1.+i)*p.y+d+i*i+p);
-		t=mix(t,d,a);
-		d=a;
-		p*=2./(i+1.);
-	}
-	return t;
-}
-void main(void) {
-	vec2 uv=(FC-.5*R)/MN,st=uv*vec2(2,1);
-	vec3 col=vec3(0);
-	float bg=clouds(vec2(st.x+T*.5,-st.y));
-	uv*=1.-.3*(sin(T*.2)*.5+.5);
-	for (float i=1.; i<12.; i++) {
-		uv+=.1*cos(i*vec2(.1+.01*i, .8)+i*i+T*.5+.1*uv.x);
-		vec2 p=uv;
-		float d=length(p);
-		col+=.00125/d*(cos(sin(i)*vec3(1,2,3))+1.);
-		float b=noise(i+p+bg*1.731);
-		col+=.002*b/length(max(p,vec2(b*p.x*.02,p.y)));
-		col=mix(col,vec3(bg*.25,bg*.137,bg*.05),d);
-	}
-	O=vec4(col,1);
-}`;
 
 export default function LandingPage() {
     const router = useRouter();
 
     return (
-        <Hero
-            headline={{
-                line1: "Work Made Simple.",
-                line2: "Opportunities Made Instant."
-            }}
-            subtitle="TempHub connects you with temporary jobs and reliable workers in an instant. Find your next gig or your next great hire today."
-            buttons={{
-                primary: {
-                    text: "Get Started",
-                    onClick: () => router.push('/login'),
-                },
-                secondary: {
-                    text: "Learn More",
-                    onClick: () => { /* can be implemented later */ }
-                }
-            }}
-        />
+        <div className="relative w-full h-screen overflow-hidden bg-black">
+            <ShaderAnimation />
+            <div className="absolute inset-0 z-10 flex flex-col items-center justify-center text-center text-white p-4">
+                <h1 className="text-5xl md:text-7xl font-bold bg-gradient-to-r from-yellow-300 via-yellow-400 to-amber-300 bg-clip-text text-transparent">
+                   Work Made Simple.
+                </h1>
+                <h1 className="text-5xl md:text-7xl font-bold bg-gradient-to-r from-yellow-300 via-yellow-400 to-amber-300 bg-clip-text text-transparent">
+                   Opportunities Made Instant.
+                </h1>
+                 <p className="text-lg md:text-xl text-yellow-100/80 max-w-2xl mx-auto mt-6">
+                    TempHub connects you with temporary jobs and reliable workers in an instant. Find your next gig or your next great hire today.
+                </p>
+                <div className="mt-10">
+                     <Button 
+                        size="lg"
+                        onClick={() => router.push('/login')}
+                        className="bg-primary/90 text-primary-foreground hover:bg-primary text-lg px-8 py-6 rounded-full font-bold transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-yellow-500/20"
+                     >
+                        Get Started
+                    </Button>
+                </div>
+            </div>
+        </div>
     )
 }
-
-    
