@@ -13,7 +13,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Edit, Save, Star, ThumbsUp, X } from "lucide-react";
+import { Edit, Save, Star, ThumbsUp, X, Camera } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 
@@ -55,25 +55,52 @@ const initialUser = {
 export default function ProfilePage() {
   const [isEditing, setIsEditing] = useState(false);
   const [user, setUser] = useState(initialUser);
-  const [tempSkills, setTempSkills] = useState(user.skills.join(", "));
+  const [tempUser, setTempUser] = useState(initialUser);
 
   const handleEditToggle = () => {
     if (isEditing) {
-        setUser(prevUser => ({...prevUser, skills: tempSkills.split(',').map(s => s.trim()).filter(Boolean)}));
+      const updatedSkills = tempUser.skills.map(s => typeof s === 'string' ? s.trim() : s).filter(Boolean);
+      setUser({...tempUser, skills: updatedSkills as string[]});
+    } else {
+      setTempUser(user);
     }
     setIsEditing(!isEditing);
   };
 
   const handleCancel = () => {
-    setUser(initialUser);
-    setTempSkills(initialUser.skills.join(", "));
+    setTempUser(initialUser);
     setIsEditing(false);
   }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       const {name, value} = e.target;
-      setUser(prevUser => ({...prevUser, [name]: value}));
+      setTempUser(prevUser => ({...prevUser, [name]: value}));
   }
+
+  const handleSkillsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      setTempUser(prevUser => ({...prevUser, skills: e.target.value.split(',')}));
+  }
+
+  const handleExperienceChange = (index: number, field: 'title' | 'company' | 'period', value: string) => {
+    const newExperience = [...tempUser.experience];
+    newExperience[index] = { ...newExperience[index], [field]: value };
+    setTempUser(prevUser => ({...prevUser, experience: newExperience}));
+  }
+
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        if (event.target?.result) {
+          setTempUser(prevUser => ({ ...prevUser, avatar: event.target!.result as string }));
+        }
+      };
+      reader.readAsDataURL(e.target.files[0]);
+    }
+  };
+
+
+  const currentUser = isEditing ? tempUser : user;
 
 
   return (
@@ -81,18 +108,26 @@ export default function ProfilePage() {
       <Card>
         <CardHeader className="relative">
           <div className="flex items-center space-x-4">
-            <Avatar className="h-20 w-20">
-              <AvatarImage src={user.avatar} data-ai-hint="person face" />
-              <AvatarFallback>AJ</AvatarFallback>
-            </Avatar>
+            <div className="relative">
+                <Avatar className="h-20 w-20">
+                    <AvatarImage src={currentUser.avatar} data-ai-hint="person face" />
+                    <AvatarFallback>{currentUser.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+                </Avatar>
+                {isEditing && (
+                    <label htmlFor="avatar-upload" className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full cursor-pointer opacity-0 hover:opacity-100 transition-opacity">
+                        <Camera className="h-6 w-6 text-white" />
+                        <input id="avatar-upload" type="file" className="hidden" accept="image/*" onChange={handleAvatarChange} />
+                    </label>
+                )}
+            </div>
             <div>
               {isEditing ? (
-                 <Input name="name" value={user.name} onChange={handleInputChange} className="text-3xl font-bold font-headline mb-1" />
+                 <Input name="name" value={tempUser.name} onChange={handleInputChange} className="text-3xl font-bold font-headline mb-1" />
               ) : (
                 <CardTitle className="font-headline text-3xl">{user.name}</CardTitle>
               )}
                {isEditing ? (
-                 <Input name="email" value={user.email} onChange={handleInputChange} className="text-md" />
+                 <Input name="email" value={tempUser.email} onChange={handleInputChange} className="text-md" />
               ) : (
                 <CardDescription className="text-md">{user.email}</CardDescription>
               )}
@@ -123,7 +158,7 @@ export default function ProfilePage() {
             <div>
               <h3 className="font-headline text-lg font-semibold">About Me</h3>
               {isEditing ? (
-                <Textarea name="bio" value={user.bio} onChange={handleInputChange} className="mt-1 min-h-[100px]" />
+                <Textarea name="bio" value={tempUser.bio} onChange={handleInputChange} className="mt-1 min-h-[100px]" />
               ) : (
                 <p className="mt-1 text-muted-foreground">{user.bio}</p>
               )}
@@ -134,7 +169,7 @@ export default function ProfilePage() {
             <div>
               <h3 className="font-headline text-lg font-semibold">Skills</h3>
                {isEditing ? (
-                <Input value={tempSkills} onChange={(e) => setTempSkills(e.target.value)} className="mt-2" placeholder="Comma-separated skills" />
+                <Input value={tempUser.skills.join(', ')} onChange={handleSkillsChange} className="mt-2" placeholder="Comma-separated skills" />
               ) : (
                 <div className="mt-2 flex flex-wrap gap-2">
                     {user.skills.map((skill) => (
@@ -149,25 +184,13 @@ export default function ProfilePage() {
             <div>
                 <h3 className="font-headline text-lg font-semibold">Work Experience</h3>
                 <div className="mt-2 space-y-4">
-                    {user.experience.map((exp, index) => (
-                        <div key={exp.company}>
+                    {currentUser.experience.map((exp, index) => (
+                        <div key={index}>
                              {isEditing ? (
                                 <div className="space-y-1">
-                                    <Input value={exp.title} onChange={(e) => {
-                                        const newExperience = [...user.experience];
-                                        newExperience[index].title = e.target.value;
-                                        setUser({...user, experience: newExperience});
-                                    }} placeholder="Job Title" />
-                                     <Input value={exp.company} onChange={(e) => {
-                                        const newExperience = [...user.experience];
-                                        newExperience[index].company = e.target.value;
-                                        setUser({...user, experience: newExperience});
-                                    }} placeholder="Company" />
-                                     <Input value={exp.period} onChange={(e) => {
-                                        const newExperience = [...user.experience];
-                                        newExperience[index].period = e.target.value;
-                                        setUser({...user, experience: newExperience});
-                                    }} placeholder="Period (e.g. 2021 - Present)" />
+                                    <Input value={exp.title} onChange={(e) => handleExperienceChange(index, 'title', e.target.value)} placeholder="Job Title" />
+                                     <Input value={exp.company} onChange={(e) => handleExperienceChange(index, 'company', e.target.value)} placeholder="Company" />
+                                     <Input value={exp.period} onChange={(e) => handleExperienceChange(index, 'period', e.target.value)} placeholder="Period (e.g. 2021 - Present)" />
                                 </div>
                             ) : (
                                 <>
