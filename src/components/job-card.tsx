@@ -1,3 +1,4 @@
+
 import type { Job } from "@/lib/types";
 import {
   Card,
@@ -9,15 +10,30 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { MapPin, DollarSign, Clock, ArrowRight } from "lucide-react";
+import { MapPin, DollarSign, Clock, ArrowRight, Code, PenTool, Clipboard, Users, ShoppingCart, ConciergeBell, Calendar, Wrench, Truck, Briefcase } from "lucide-react";
 import Link from "next/link";
-import Image from "next/image";
+import React from "react";
 
 type JobCardProps = {
   job: Job;
 };
 
+const categoryIcons: { [key in Job["category"]]: React.ElementType } = {
+  Tech: Code,
+  Design: PenTool,
+  Admin: Clipboard,
+  Management: Users,
+  Retail: ShoppingCart,
+  Hospitality: ConciergeBell,
+  Events: Calendar,
+  Labor: Wrench,
+  Logistics: Truck,
+  Other: Briefcase,
+};
+
 export function JobCard({ job }: JobCardProps) {
+  const Icon = categoryIcons[job.category] || Briefcase;
+
   return (
     <Card className="group flex flex-col">
       <CardHeader>
@@ -31,14 +47,9 @@ export function JobCard({ job }: JobCardProps) {
             </CardTitle>
             <CardDescription>{job.company}</CardDescription>
           </div>
-          <Image
-            src={`https://placehold.co/40x40.png`}
-            data-ai-hint="company logo"
-            alt={`${job.company} logo`}
-            width={40}
-            height={40}
-            className="rounded-lg"
-          />
+          <div className="p-3 bg-muted rounded-lg">
+            <Icon className="h-6 w-6 text-primary" />
+          </div>
         </div>
       </CardHeader>
       <CardContent className="flex-grow">

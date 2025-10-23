@@ -10,9 +10,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import type { Job } from "@/lib/types";
-import { ArrowLeft, Clock, DollarSign, MapPin } from "lucide-react";
-import Image from "next/image";
+import { ArrowLeft, Clock, DollarSign, MapPin, Code, PenTool, Clipboard, Users, ShoppingCart, ConciergeBell, Calendar, Wrench, Truck, Briefcase } from "lucide-react";
 import Link from "next/link";
+import React from 'react';
 
 const mockJobs: Job[] = [
   {
@@ -105,6 +105,20 @@ const mockJobs: Job[] = [
   },
 ];
 
+const categoryIcons: { [key in Job["category"]]: React.ElementType } = {
+  Tech: Code,
+  Design: PenTool,
+  Admin: Clipboard,
+  Management: Users,
+  Retail: ShoppingCart,
+  Hospitality: ConciergeBell,
+  Events: Calendar,
+  Labor: Wrench,
+  Logistics: Truck,
+  Other: Briefcase,
+};
+
+
 export default function JobDetailPage({ params }: { params: { id: string } }) {
   const job = mockJobs.find((j) => j.id === params.id);
 
@@ -118,6 +132,8 @@ export default function JobDetailPage({ params }: { params: { id: string } }) {
       </div>
     );
   }
+
+  const Icon = categoryIcons[job.category] || Briefcase;
 
   const ApplyNowButton = () => (
     <Button size="lg" className="w-full" asChild>
@@ -144,14 +160,9 @@ export default function JobDetailPage({ params }: { params: { id: string } }) {
                   <CardTitle className="font-headline text-3xl">{job.title}</CardTitle>
                   <CardDescription className="text-lg">{job.company}</CardDescription>
                 </div>
-                 <Image
-                    src={`https://placehold.co/60x60.png`}
-                    data-ai-hint="company logo"
-                    alt={`${job.company} logo`}
-                    width={60}
-                    height={60}
-                    className="rounded-lg hidden sm:block"
-                  />
+                 <div className="p-4 bg-muted rounded-lg hidden sm:block">
+                   <Icon className="h-8 w-8 text-primary" />
+                 </div>
               </div>
             </CardHeader>
             <CardContent>
