@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, useState } from 'react';
+import { Suspense, useState, useMemo } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { JobCard } from "@/components/job-card";
 import { Button } from "@/components/ui/button";
@@ -165,6 +165,48 @@ function DashboardContent() {
     })
   }
 
+  const filteredJobs = useMemo(() => {
+    return mockJobs.filter(job => {
+      // Category filter
+      if (filters.categories.size > 0 && !filters.categories.has(job.category)) {
+        return false;
+      }
+
+      // Location filter
+      const locationFilters = [
+        filters.chennai && "Chennai",
+        filters.coimbatore && "Coimbatore",
+        filters.madurai && "Madurai",
+      ].filter(Boolean);
+
+      if (locationFilters.length > 0 && !locationFilters.some(loc => job.location.includes(loc as string))) {
+        return false;
+      }
+
+      // Pay rate filter
+      const payRate = parseInt(job.payRate.replace(/[^0-9]/g, ''));
+      const payFilters = [
+        filters.payHigh && payRate >= 900,
+        filters.payMid && payRate >= 700 && payRate < 900,
+        filters.payLow && payRate < 700,
+      ];
+      
+      if (payFilters.some(f => f) && !payFilters.some(f => f === true)) {
+          return false;
+      }
+      if(filters.payHigh || filters.payMid || filters.payLow){
+          let pass = false;
+          if(filters.payHigh && payRate >= 900) pass = true;
+          if(filters.payMid && (payRate >= 700 && payRate < 900)) pass = true;
+          if(filters.payLow && payRate < 700) pass = true;
+          if(!pass) return false;
+      }
+
+
+      return true;
+    });
+  }, [filters]);
+
   if (role === 'business') {
     return (
       <div className="container mx-auto p-4 md:p-8 animate-fade-in">
@@ -244,7 +286,7 @@ function DashboardContent() {
                             <DropdownMenuCheckboxItem
                                 key={cat}
                                 checked={filters.categories.has(cat)}
-                                onCheckedChange={(checked) => handleCategoryChange(cat, checked)}
+                                onCheckedChange={(checked) => handleCategoryChange(cat, !!checked)}
                             >
                                 {cat}
                             </DropdownMenuCheckboxItem>
@@ -296,7 +338,7 @@ function DashboardContent() {
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {mockJobs.map((job) => (
+        {filteredJobs.map((job) => (
           <JobCard key={job.id} job={job} />
         ))}
       </div>
