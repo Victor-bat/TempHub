@@ -14,7 +14,7 @@ const recommendedVideos = [
   {
     id: '2',
     title: 'How to Write a Great Resume',
-    videoId: 'pbczsLkv2Cc',
+    videoId: 'Tt08KmFfIYQ',
     description: 'Craft a resume that stands out and gets you noticed by recruiters.'
   },
   {
