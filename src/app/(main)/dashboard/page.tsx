@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import type { Job } from "@/lib/types";
 import { Search, SlidersHorizontal, Plus } from "lucide-react";
 import Link from 'next/link';
-import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardDescription, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
 
 const mockJobs: Job[] = [
   {
@@ -133,16 +133,16 @@ function DashboardContent() {
   if (role === 'business') {
     return (
       <div className="container mx-auto p-4 md:p-8 animate-fade-in">
-        <div className="mb-8 flex items-center justify-between">
+        <div className="mb-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
             <h1 className="text-3xl md:text-4xl font-headline font-bold tracking-tight">
               Your Job Posts
             </h1>
-            <p className="mt-2 text-muted-foreground">
+            <p className="mt-1 text-muted-foreground">
               Manage your current and past job postings.
             </p>
           </div>
-          <Button asChild>
+          <Button asChild className="w-full sm:w-auto">
             <Link href="/jobs/post">
                 <Plus className="mr-2 h-4 w-4" />
                 Post New Job
@@ -150,17 +150,24 @@ function DashboardContent() {
           </Button>
         </div>
 
-        <div className="grid gap-6">
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {mockPostedJobs.map((job) => (
-             <Card key={job.id} className="hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+             <Card key={job.id} className="group flex flex-col">
                <CardHeader>
                 <CardTitle className="font-headline text-xl">
-                  <Link href={`/jobs/${job.id}`} className="hover:underline">
+                  <Link href={`/jobs/${job.id}`} className="group-hover:text-primary transition-colors">
                     {job.title}
                   </Link>
                 </CardTitle>
-                <CardDescription>Status: Active - 5 Applicants</CardDescription>
+                <CardDescription>{job.company} - {job.location}</CardDescription>
                </CardHeader>
+               <CardContent>
+                 <p className="text-sm text-muted-foreground">Status: <span className="text-green-500 font-semibold">Active</span></p>
+                 <p className="text-sm text-muted-foreground">Applicants: <span className="font-semibold text-foreground">5</span></p>
+               </CardContent>
+               <CardFooter>
+                 <Button variant="outline" className="w-full">View Applicants</Button>
+               </CardFooter>
              </Card>
           ))}
         </div>
@@ -175,15 +182,15 @@ function DashboardContent() {
         <h1 className="text-3xl md:text-4xl font-headline font-bold tracking-tight">
           Available Gigs in Tamil Nadu
         </h1>
-        <p className="mt-2 text-muted-foreground">
-          Browse through thousands of temporary job openings.
+        <p className="mt-2 text-muted-foreground max-w-xl mx-auto">
+          Instantly find temporary jobs that fit your skills and schedule. Your next opportunity is just a click away.
         </p>
       </div>
 
       <div className="mb-8 flex flex-col sm:flex-row gap-4 max-w-2xl mx-auto">
         <div className="relative flex-grow">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-          <Input placeholder="Search by job type, location" className="pl-10" />
+          <Input placeholder="Search by job title, skill, or company" className="pl-10 text-base" />
         </div>
         <Button variant="outline">
           <SlidersHorizontal className="mr-2 h-4 w-4" />
@@ -191,7 +198,7 @@ function DashboardContent() {
         </Button>
       </div>
 
-      <div className="grid gap-6 max-w-2xl mx-auto">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {mockJobs.map((job) => (
           <JobCard key={job.id} job={job} />
         ))}
