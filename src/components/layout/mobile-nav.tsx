@@ -14,7 +14,7 @@ export default function MobileNav() {
 
   const seekerLinks = [
     { href: "/dashboard?role=seeker", icon: Home, label: "Home" },
-    { href: "#", icon: BrainCircuit, label: "Skills" },
+    { href: "/skill-development", icon: BrainCircuit, label: "Skills" },
     { href: "/profile?role=seeker", icon: User, label: "Profile" },
   ];
 

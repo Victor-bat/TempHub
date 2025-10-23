@@ -38,7 +38,7 @@ export default function Header() {
                   <Link href="/dashboard?role=seeker">Find Jobs</Link>
                 </Button>
                 <Button variant="ghost" asChild>
-                  <Link href="#">Skill Development</Link>
+                  <Link href="/skill-development">Skill Development</Link>
                 </Button>
               </>
             )}
