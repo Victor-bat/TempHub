@@ -143,6 +143,7 @@ function DashboardContent() {
   const searchParams = useSearchParams();
   const role = searchParams.get('role');
 
+  const [searchQuery, setSearchQuery] = useState('');
   const [filters, setFilters] = useState({
     chennai: false,
     coimbatore: false,
@@ -166,7 +167,22 @@ function DashboardContent() {
   }
 
   const filteredJobs = useMemo(() => {
+    const lowercasedQuery = searchQuery.toLowerCase();
+
     return mockJobs.filter(job => {
+      // Search filter
+      if (searchQuery) {
+        const searchableContent = [
+          job.title,
+          job.company,
+          ...job.skills,
+        ].join(' ').toLowerCase();
+
+        if (!searchableContent.includes(lowercasedQuery)) {
+          return false;
+        }
+      }
+
       // Category filter
       if (filters.categories.size > 0 && !filters.categories.has(job.category)) {
         return false;
@@ -205,7 +221,7 @@ function DashboardContent() {
 
       return true;
     });
-  }, [filters]);
+  }, [searchQuery, filters]);
 
   if (role === 'business') {
     return (
@@ -267,7 +283,12 @@ function DashboardContent() {
       <div className="mb-8 flex flex-col sm:flex-row gap-4 max-w-2xl mx-auto">
         <div className="relative flex-grow">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-          <Input placeholder="Search by job title, skill, or company" className="pl-10 text-base" />
+          <Input 
+            placeholder="Search by job title, skill, or company" 
+            className="pl-10 text-base"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
         </div>
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
