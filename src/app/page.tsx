@@ -16,11 +16,11 @@ export default function SplashPage() {
 
   return (
     <div className="flex h-screen flex-col items-center justify-center bg-background">
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-4 animate-fade-in-scale">
         <Briefcase className="h-12 w-12 text-primary" />
         <h1 className="text-5xl font-bold font-headline text-primary">TempHub</h1>
       </div>
-      <p className="mt-4 text-lg text-muted-foreground">
+      <p className="mt-4 text-lg text-muted-foreground animate-fade-in">
         Work Made Simple. Opportunities Made Instant.
       </p>
     </div>

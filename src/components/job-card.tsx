@@ -19,7 +19,7 @@ type JobCardProps = {
 
 export function JobCard({ job }: JobCardProps) {
   return (
-    <Card className="hover:shadow-lg transition-shadow duration-300">
+    <Card className="hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
       <CardHeader>
         <div className="flex items-start justify-between">
           <div>

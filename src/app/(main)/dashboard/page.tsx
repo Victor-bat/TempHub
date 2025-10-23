@@ -82,7 +82,7 @@ const mockJobs: Job[] = [
     title: "Delivery Driver",
     company: "Quick Delivery",
     location: "Coimbatore, TN",
-    payRate: "₹1000/day + tips",
+    payRate: "₹1000/day",
     duration: "Flexible",
     description: "Flexible delivery driver position available. Must have a valid driver's license and a reliable vehicle.",
     skills: ["Driving", "Navigation", "Customer Service"],
@@ -132,7 +132,7 @@ function DashboardContent() {
 
   if (role === 'business') {
     return (
-      <div className="container mx-auto p-4 md:p-8">
+      <div className="container mx-auto p-4 md:p-8 animate-fade-in">
         <div className="mb-8 flex items-center justify-between">
           <div>
             <h1 className="text-3xl md:text-4xl font-headline font-bold tracking-tight">
@@ -152,7 +152,7 @@ function DashboardContent() {
 
         <div className="grid gap-6">
           {mockPostedJobs.map((job) => (
-             <Card key={job.id} className="hover:shadow-lg transition-shadow duration-300">
+             <Card key={job.id} className="hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
                <CardHeader>
                 <CardTitle className="font-headline text-xl">
                   <Link href={`/jobs/${job.id}`} className="hover:underline">
@@ -170,7 +170,7 @@ function DashboardContent() {
 
   // Default to Job Seeker view
   return (
-    <div className="container mx-auto p-4 md:p-8">
+    <div className="container mx-auto p-4 md:p-8 animate-fade-in">
       <div className="mb-8 text-center">
         <h1 className="text-3xl md:text-4xl font-headline font-bold tracking-tight">
           Available Gigs in Tamil Nadu
