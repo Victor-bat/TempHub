@@ -1,3 +1,6 @@
+
+'use client';
+
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -12,9 +15,16 @@ import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Briefcase } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 
 export default function SignupPage() {
+  const router = useRouter();
+
+  const handleSignup = () => {
+    router.push('/dashboard?role=seeker');
+  };
+
   return (
     <div className="w-full h-screen lg:grid lg:grid-cols-2">
       <div className="hidden bg-muted lg:flex items-center justify-center flex-col p-8 text-center">
@@ -76,7 +86,7 @@ export default function SignupPage() {
                 </div>
                 </CardContent>
                 <CardFooter className="flex flex-col gap-4">
-                <Button className="w-full">Sign Up</Button>
+                <Button className="w-full" onClick={handleSignup}>Sign Up</Button>
                 <div className="text-sm text-muted-foreground">
                     Already have an account?{" "}
                     <Link href="/login" className="font-semibold text-primary hover:underline">
